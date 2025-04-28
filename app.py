@@ -1,5 +1,7 @@
 # app.py
 
+import os
+from flask import Flask
 from flask import Flask, request
 from telegram import Update
 from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
@@ -27,6 +29,6 @@ def webhook():
     dispatcher.process_update(update)
     return 'ok'
 
-if __name__ == "__main__":
-    updater.start_polling()
-    app.run(port=5000)
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))  # Use Render's PORT, default to 5000 if not set
+    app.run(host='0.0.0.0', port=port)
