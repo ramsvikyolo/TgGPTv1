@@ -4,14 +4,14 @@ from telegram import Bot, Update
 from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters
 from handlers import start_handler, help_handler, message_handler, admin_handler
 
-# Load environment variables (your token)
-TELEGRAM_TOKEN = os.environ.get(8015540396:AAHGX0kwF5jpXcm4d06nE01_zPNs1lvBgwA)
+# Your token directly here
+TELEGRAM_TOKEN = '8015540396:AAHGX0kwF5jpXcm4d06nE01_zPNs1lvBgwA'
 
 # Flask app
 app = Flask(__name__)
 
 # Telegram bot and dispatcher
-bot = Bot(token=8015540396:AAHGX0kwF5jpXcm4d06nE01_zPNs1lvBgwA)
+bot = Bot(token=TELEGRAM_TOKEN)
 dispatcher = Dispatcher(bot, None, workers=4)
 
 # Command handlers
@@ -21,7 +21,7 @@ dispatcher.add_handler(CommandHandler('admin', admin_handler))
 dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, message_handler))
 
 # Route for Telegram webhook
-@app.route(f'/8015540396:AAHGX0kwF5jpXcm4d06nE01_zPNs1lvBgwA', methods=['POST'])
+@app.route(f'/{TELEGRAM_TOKEN}', methods=['POST'])
 def webhook():
     update = Update.de_json(request.get_json(force=True), bot)
     dispatcher.process_update(update)
