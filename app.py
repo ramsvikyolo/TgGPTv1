@@ -1,34 +1,37 @@
-# app.py
-
 import os
-from flask import Flask
 from flask import Flask, request
-from telegram import Update
-from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
-from telegram.ext import Updater
-import config
-from handlers.welcome import welcome
-from handlers.basic_commands import start
+from telegram import Bot, Update
+from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters
+from handlers import start_handler, help_handler, message_handler, admin_handler
 
+# Load environment variables (your token)
+TELEGRAM_TOKEN = os.environ.get(8015540396:AAHGX0kwF5jpXcm4d06nE01_zPNs1lvBgwA)
+
+# Flask app
 app = Flask(__name__)
 
-updater = Updater(token=config.TELEGRAM_TOKEN, use_context=True)
-dispatcher = updater.dispatcher
+# Telegram bot and dispatcher
+bot = Bot(token=8015540396:AAHGX0kwF5jpXcm4d06nE01_zPNs1lvBgwA)
+dispatcher = Dispatcher(bot, None, workers=4)
 
-# Handlers
-dispatcher.add_handler(CommandHandler("start", start))
-dispatcher.add_handler(MessageHandler(Filters.status_update.new_chat_members, welcome))
+# Command handlers
+dispatcher.add_handler(CommandHandler('start', start_handler))
+dispatcher.add_handler(CommandHandler('help', help_handler))
+dispatcher.add_handler(CommandHandler('admin', admin_handler))
+dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, message_handler))
 
-@app.route('/')
-def index():
-    return "Bot is running!"
-
-@app.route(f"/{config.TELEGRAM_TOKEN}", methods=['POST'])
+# Route for Telegram webhook
+@app.route(f'/8015540396:AAHGX0kwF5jpXcm4d06nE01_zPNs1lvBgwA', methods=['POST'])
 def webhook():
-    update = Update.de_json(request.get_json(force=True), updater.bot)
+    update = Update.de_json(request.get_json(force=True), bot)
     dispatcher.process_update(update)
     return 'ok'
 
+# Root route for testing
+@app.route('/')
+def index():
+    return 'Bot is running!'
+
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))  # Use Render's PORT, default to 5000 if not set
-    app.run(host='0.0.0.0', port=port)
+    PORT = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=PORT)
